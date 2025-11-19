@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using API_Product.Models;
+using API_Product.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace API_Product.Controllers
 {
@@ -6,27 +10,27 @@ namespace API_Product.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private static readonly List<Models.Product> _products = new List<Models.Product>
+        private readonly IProductRepository _productRepository;
+
+        //Constructor
+        public ProductsController(IProductRepository productRepository)
         {
-            new Models.Product { Id = 1, Name = "Laptop", Description = "A high-performance laptop", Price = 999.99m, Category = "Electronics" },
-            new Models.Product { Id = 2, Name = "Smartphone", Description = "A latest model smartphone", Price = 699.99m, Category = "Electronics" },
-            new Models.Product { Id = 3, Name = "Desk Chair", Description = "Ergonomic office chair", Price = 149.99m, Category = "Furniture" },
-            new Models.Product { Id = 4, Name = "Coffee Maker", Description = "Automatic coffee maker", Price = 89.99m, Category = "Appliances" },
-            new Models.Product { Id = 5, Name = "Headphones", Description = "Noise-cancelling headphones", Price = 199.99m, Category = "Electronics" }
-        };
+            _productRepository = productRepository;
+        }
 
         // Get: api/products
         [HttpGet]
-        public ActionResult<IEnumerable<Models.Product>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return Ok(_products);
+            var products = await _productRepository.GetAllAsync();
+            return Ok(products);
         }
 
         // Get: api/products/{id}
-        [HttpGet("{id}")]
-        public ActionResult<Models.Product> GetProduct(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = _products.FirstOrDefault(p => p.Id == id);
+            var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -36,16 +40,23 @@ namespace API_Product.Controllers
 
         // Post: api/products
         [HttpPost]
-        public ActionResult<Models.Product> CreateProduct([FromBody] Models.Product product)
+        public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
-            product.Id = _products.Max(p => p.Id) + 1;
-            _products.Add(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _productRepository.AddAsync(product);
+
+            // Intentar obtener el producto creador (si el repositorio asigna Id)
+            var created = await _productRepository.GetByIdAsync(product.Id);
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, created ?? product);
         }
 
         // Put: api/products/{id}
         [HttpPut("{id}")]
-        public ActionResult UpdateProduct(int id, [FromBody] Models.Product updatedProduct)
+        public ActionResult UpdateProduct(int id, Product updatedProduct)
         {
             if (id != updatedProduct.Id)
             {
