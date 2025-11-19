@@ -8,14 +8,21 @@
 
 # Build outputs
 bin/
+/obj/
 obj/
 out/
 publish/
 
-# NuGet
+# NuGet & MSBuild cache
+project.assets.json
+project.nuget.cache
 *.nupkg
 .nuget/
 packages/
+*.nuget.cache
+*.cache
+*.assets.cache
+rpswa.dswa.cache.json
 
 # Logs
 *.log
