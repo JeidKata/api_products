@@ -1,0 +1,43 @@
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+out/
+publish/
+
+# NuGet
+*.nupkg
+.nuget/
+packages/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Secrets / local configuration
+appsettings.Development.json
+secrets.json
+.local/
+
+# SQLite / local DB files
+*.db
+*.sqlite
+*.sqlite3
+database/*.db
+
+# Temporary / tooling
+*.tmp
+*.cache
+
+# Rider
+.idea/
