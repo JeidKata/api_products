@@ -55,36 +55,47 @@ namespace API_Product.Controllers
         }
 
         // Put: api/products/{id}
-        [HttpPut("{id}")]
-        public ActionResult UpdateProduct(int id, Product updatedProduct)
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateProduct(int id, Product updatedProduct)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (id != updatedProduct.Id)
             {
                 return BadRequest();
             }
 
-            var existingProduct = _products.FirstOrDefault(p => p.Id == id);
+            var existingProduct = await _productRepository.GetByIdAsync(id);
             if (existingProduct == null)
             {
                 return NotFound();
             }
+
             existingProduct.Name = updatedProduct.Name;
             existingProduct.Description = updatedProduct.Description;
             existingProduct.Price = updatedProduct.Price;
             existingProduct.Category = updatedProduct.Category;
+
+            await _productRepository.UpdateAsync(existingProduct);
+
             return NoContent();
         }
 
         // Delete: api/products/{id}
-        [HttpDelete("{id}")]
-        public ActionResult DeleteProduct(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            var productRemove = _products.FirstOrDefault(p => p.Id == id);
+            var productRemove = await _productRepository.GetByIdAsync(id);
             if (productRemove == null)
             {
                 return NotFound();
             }
-            _products.Remove(productRemove);
+
+            await _productRepository.DeleteAsync(id);
+
             return NoContent();
         }
     }
