@@ -70,8 +70,27 @@ Sigue estos pasos para poner en marcha el proyecto:
     ```bash
     dotnet restore
     ```
+    Si no funciona el comando anterior puedes intentar con los siguientes:
 
-4.  **Ejecutar la Aplicación:**
+    ```bash
+    # valida que paquetes tiene el proyecto
+    dotnet list API_Product package
+
+    # Paquete de nivel superior                               Solicitado            Resuelto
+    # Dapper                                                2.1.35                2.1.35
+    # Microsoft.Data.Sqlite                                 10.0.0                10.0.0
+    # Microsoft.VisualStudio.Web.CodeGeneration.Design      10.0.0-rc.1.25458.5   10.0.0-rc.1.25458.5
+    # Swashbuckle.AspNetCore                                10.0.1                10.0.1
+    
+    # Si tiene Visual Studio 2026
+    # puede instalar Dapper con el comando
+    Install-Package Dapper
+    
+    #Puede agregar el paquete para el Swagger.
+    dotnet add API_Product package Swashbuckle.AspNetCore
+    ```
+
+5.  **Ejecutar la Aplicación:**
     ```bash
     dotnet run
     ```
@@ -127,3 +146,4 @@ o de la siguiente forma, esto depende de como este configurado tu PowerShell
 
 ```Bash
 curl -v -H "Content-Type: application/json" -d '{"name":"TV LG","price":29.99,"description":"An LG brand TV.","category":"Electronics"}' http://localhost:5157/api/products
+
